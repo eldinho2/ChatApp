@@ -2,7 +2,7 @@
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "UserName" TEXT NOT NULL,
+    "userName" TEXT NOT NULL,
     "hashedPassword" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updateAt" TIMESTAMP(3) NOT NULL
@@ -15,4 +15,4 @@ CREATE UNIQUE INDEX "User_id_key" ON "User"("id");
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_UserName_key" ON "User"("UserName");
+CREATE UNIQUE INDEX "User_userName_key" ON "User"("userName");

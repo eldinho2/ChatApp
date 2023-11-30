@@ -10,7 +10,7 @@ export class UserService {
       data: {
         email: 'curuihgd@fdrgdr',
         hashedPassword: 'r4353453634g34t',
-        UserName: 'Eldinho',
+        userName: 'Eldinho',
       },
     });
   }
