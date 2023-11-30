@@ -13,7 +13,7 @@ export class AuthDto {
   @IsEmail()
   public email: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Senha deve ser entre 6 e 20 caracteres' })
   @IsString()
   @Length(6, 20, { message: 'Senha deve ser entre 6 e 20 caracteres' })
   public password: string;

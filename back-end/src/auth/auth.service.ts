@@ -1,19 +1,39 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  ForbiddenException,
+} from '@nestjs/common';
 import { AuthDto } from './dto/auth.dto';
 import { PrismaService } from 'prisma/prisma.service';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { JwtSecret } from 'src/utils/constants';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwt: JwtService,
+  ) {}
 
   async signup(dto: AuthDto) {
     const { userName, email, password } = dto;
-    if (this.emailUserExists) {
-      throw new BadRequestException('Email ja está sendo ultilizado');
+
+    const userEmailExists = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (userEmailExists) {
+      throw new BadRequestException('Email ja cadastrado.');
     }
-    if (this.userNameExists) {
-      throw new BadRequestException('Usuario ja está sendo ultilizado');
+
+    const userNameExists = await this.prisma.user.findUnique({
+      where: { userName },
+    });
+
+    if (userNameExists) {
+      throw new BadRequestException('Nome de usuario ja cadastrado.');
     }
 
     const hashedPassword = await this.hashPassword(password);
@@ -27,12 +47,46 @@ export class AuthService {
     });
   }
 
-  async signin() {
-    return { message: 'signin' };
+  async signin(dto: AuthDto, res: Response) {
+    const { email, password } = dto;
+
+    const foundUser = await this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    if (!foundUser) {
+      throw new BadRequestException('Email ou usuario incorreto');
+    }
+
+    const validPassword = await this.comparePasswords(
+      password,
+      foundUser.hashedPassword,
+    );
+
+    if (!validPassword) {
+      throw new BadRequestException('Email ou usuario incorreto');
+    }
+
+    const token = await this.signTokenJwt({
+      id: foundUser.id,
+      email: foundUser.email,
+    });
+
+    if (!token) {
+      throw new ForbiddenException('Could not signin');
+    }
+
+    res.cookie('token', token);
+
+    res.status(200).send({ message: 'usuario logado com sucesso' });
   }
 
-  async signout() {
-    return { message: 'Signout' };
+  async signout(res: Response) {
+    res.clearCookie('token');
+
+    return res.send({ message: 'Logout com sucesso' });
   }
 
   async emailUserExists(email: string) {
@@ -55,7 +109,16 @@ export class AuthService {
 
   async hashPassword(password: string) {
     const saltOrRounds = 10;
-
     return await bcrypt.hash(password, saltOrRounds);
+  }
+
+  async comparePasswords(password: string, hash: string) {
+    return await bcrypt.compare(password, hash);
+  }
+
+  async signTokenJwt(args: { id: string; email: string }) {
+    const payload = args;
+
+    return this.jwt.sign(payload, { secret: JwtSecret });
   }
 }
