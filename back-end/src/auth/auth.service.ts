@@ -71,16 +71,14 @@ export class AuthService {
 
     const token = await this.signTokenJwt({
       id: foundUser.id,
-      email: foundUser.email,
+      userName: foundUser.userName,
     });
 
     if (!token) {
       throw new ForbiddenException('Could not signin');
     }
 
-    res.cookie('token', token);
-
-    res.status(200).send({ message: 'usuario logado com sucesso' });
+    res.status(200).send({ message: token });
   }
 
   async signout(res: Response) {
@@ -116,7 +114,7 @@ export class AuthService {
     return await bcrypt.compare(password, hash);
   }
 
-  async signTokenJwt(args: { id: string; email: string }) {
+  async signTokenJwt(args: { id: string; userName: string }) {
     const payload = args;
 
     return this.jwt.sign(payload, { secret: JwtSecret });
