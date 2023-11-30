@@ -11,7 +11,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   app.use(cookieParser());
-
+  app.enableCors();
   await app.listen(3001);
 }
 bootstrap();
