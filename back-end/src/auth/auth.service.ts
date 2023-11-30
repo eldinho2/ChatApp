@@ -3,7 +3,8 @@ import {
   Injectable,
   ForbiddenException,
 } from '@nestjs/common';
-import { AuthDto } from './dto/auth.dto';
+import { AuthRegisterDto } from './dto/authRegister.dto';
+import { AuthLoginDto } from './dto/authLogin.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -17,7 +18,7 @@ export class AuthService {
     private jwt: JwtService,
   ) {}
 
-  async signup(dto: AuthDto) {
+  async signup(dto: AuthRegisterDto) {
     const { userName, email, password } = dto;
 
     const userEmailExists = await this.prisma.user.findUnique({
@@ -47,7 +48,7 @@ export class AuthService {
     });
   }
 
-  async signin(dto: AuthDto, res: Response) {
+  async signin(dto: AuthLoginDto, res: Response) {
     const { email, password } = dto;
 
     const foundUser = await this.prisma.user.findUnique({
@@ -69,9 +70,18 @@ export class AuthService {
       throw new BadRequestException('Email ou usuario incorreto');
     }
 
+    const foundUserName = await this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+      select: {
+        userName: true,
+      },
+    });
+
     const token = await this.signTokenJwt({
       id: foundUser.id,
-      userName: foundUser.userName,
+      userName: foundUserName.userName,
     });
 
     if (!token) {
