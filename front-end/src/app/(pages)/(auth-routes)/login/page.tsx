@@ -2,8 +2,10 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { getSession, signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { loginSchema, registerSchema } from './loginSchemas'
 
 type FormData = {
   userName: string;
@@ -11,27 +13,40 @@ type FormData = {
   password: string;
 };
 
-const schema = z.object({
-  userName: z
-    .string()
-    .min(4, { message: "usuario deve ter pelo menos 4 caracteres" })
-    .max(20, { message: "Usuario nao pode ser maior que 20 caracteres" }),
-  email: z.string().email({ message: "Email inválido" }),
-  password: z
-    .string()
-    .min(6, { message: "A senha deve ter pelo menos 8 caracteres" })
-    .max(20, { message: "A senha não pode ter mais que 20 caracteres" }),
-});
+
 
 export default function Login() {
   const [formType, setFormType] = useState("register");
+  const [apiError, setApiError] = useState("")
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
+  } = useForm<FormData>({ resolver: zodResolver(formType === 'login' ? loginSchema : registerSchema) });
 
-  const onSubmit = (data: FormData) => console.log(data);
+  const router = useRouter()
+
+  const onSubmitForm = async(data: FormData, e:any) => {
+    e.preventDefault();
+    const { userName, email, password } = data;
+
+    const result = await signIn(formType, {
+      ...(formType === 'register' && { userName }),
+      email,
+      password,
+      redirect: false
+    })
+    
+    
+    if (result?.error) {
+      console.log(result?.error)
+      setApiError(result?.error)
+      return
+    }
+
+    router.replace('/chat')
+  };
+
 
   const toggleFormType = () =>
     setFormType((prevType) => (prevType === "login" ? "register" : "login"));
@@ -54,7 +69,7 @@ export default function Login() {
       <div className="flex flex-col justify-center items-center">
         <div className="h-[400px] w-[400px]">
           <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmitForm)}
             className="flex flex-col space-y-4 p-8 animate-fade-in-down"
           >
             {formType === "register" && (
@@ -97,21 +112,14 @@ export default function Login() {
             <button
               type="submit"
               className="p-2 rounded text-white bg-[#10a37f] hover:bg-[#079474] transition duration-200"
+              onSubmit={handleSubmit(onSubmitForm)}
             >
-              Login
+              {formType === "login" ? 'Login' : 'Registrar'}
             </button>
+            <span className="text-green-600 ">{apiError}</span>
+
             <div className="flex  justify-center items-center">
               {formType === "login" ? (
-                <div className="flex gap-2 text-base">
-                  <h1>Ja tem uma conta?</h1>
-                  <span
-                    className="text-green-600 cursor-pointer"
-                    onClick={toggleFormType}
-                  >
-                    Login
-                  </span>
-                </div>
-              ) : (
                 <div className="flex gap-2 text-base">
                   <h1>Ainda nao tem conta?</h1>
                   <span
@@ -119,6 +127,16 @@ export default function Login() {
                     onClick={toggleFormType}
                   >
                     Registrar
+                  </span>
+                </div>
+              ) : (
+                <div className="flex gap-2 text-base">
+                  <h1>Ja tem uma conta?</h1>
+                  <span
+                    className="text-green-600 cursor-pointer"
+                    onClick={toggleFormType}
+                  >
+                    Login
                   </span>
                 </div>
               )}
