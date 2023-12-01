@@ -2,10 +2,11 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getSession, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { loginSchema, registerSchema } from './loginSchemas'
+import LoadingSpinner from "@/app/Components/utils/LoadingSpinner";
 
 type FormData = {
   userName: string;
@@ -16,8 +17,10 @@ type FormData = {
 
 
 export default function Login() {
-  const [formType, setFormType] = useState("register");
-  const [apiError, setApiError] = useState("")
+  const [formType, setFormType] = useState<string>("register");
+  const [apiError, setApiError] = useState<string>("")
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
   const {
     register,
     handleSubmit,
@@ -28,6 +31,7 @@ export default function Login() {
 
   const onSubmitForm = async(data: FormData, e:any) => {
     e.preventDefault();
+    setIsLoading(!isLoading)
     const { userName, email, password } = data;
 
     const result = await signIn(formType, {
@@ -111,10 +115,13 @@ export default function Login() {
 
             <button
               type="submit"
-              className="p-2 rounded text-white bg-[#10a37f] hover:bg-[#079474] transition duration-200"
+              className={`flex justify-center items-center p-2 rounded text-white bg-[#10a37f] ${!isLoading && 'hover:bg-[#079474]'} transition duration-200`}
               onSubmit={handleSubmit(onSubmitForm)}
+              disabled={isLoading}
             >
-              {formType === "login" ? 'Login' : 'Registrar'}
+              {
+                isLoading ? <LoadingSpinner /> : formType === "login" ? 'Login' : 'Registrar'
+              }
             </button>
             <span className="text-green-600 ">{apiError}</span>
 
