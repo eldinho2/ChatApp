@@ -21,6 +21,7 @@ export const nextAuthOptions: NextAuthOptions = {
         })
 
         const token = await user.json()
+        
 
         if (token && user.ok) {
           return token
@@ -32,6 +33,16 @@ export const nextAuthOptions: NextAuthOptions = {
   ],
   pages: {
     signIn: '/login'
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+			user && (token = user as any)
+			return token
+		},
+		async session({ session, token }){
+			session = token as any
+			return session
+		}
   }
 }
 
