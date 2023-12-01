@@ -18,7 +18,7 @@ export class AuthService {
     private jwt: JwtService,
   ) {}
 
-  async signup(dto: AuthRegisterDto) {
+  async signup(dto: AuthRegisterDto, res: Response) {
     const { userName, email, password } = dto;
 
     const userEmailExists = await this.prisma.user.findUnique({
@@ -46,6 +46,23 @@ export class AuthService {
         hashedPassword,
       },
     });
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+      select: {
+        id: true,
+        userName: true,
+      },
+    });
+
+    const token = await this.signTokenJwt({
+      id: user.id,
+      userName: user.userName,
+    });
+
+    res.status(200).send({ message: token });
   }
 
   async signin(dto: AuthLoginDto, res: Response) {
@@ -54,6 +71,11 @@ export class AuthService {
     const foundUser = await this.prisma.user.findUnique({
       where: {
         email,
+      },
+      select: {
+        id: true,
+        userName: true,
+        hashedPassword: true,
       },
     });
 
@@ -70,18 +92,9 @@ export class AuthService {
       throw new BadRequestException('Email ou usuario incorreto');
     }
 
-    const foundUserName = await this.prisma.user.findUnique({
-      where: {
-        email,
-      },
-      select: {
-        userName: true,
-      },
-    });
-
     const token = await this.signTokenJwt({
       id: foundUser.id,
-      userName: foundUserName.userName,
+      userName: foundUser.userName,
     });
 
     if (!token) {
