@@ -1,12 +1,7 @@
-import { Controller, Post } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { Controller } from '@nestjs/common';
+import { UserService } from './users.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
-
-  @Post('delAll')
-  async delAll() {
-    return this.usersService.delAll();
-  }
+  constructor(private readonly usersService: UserService) {}
 }
