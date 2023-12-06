@@ -7,21 +7,21 @@ const redisURL = process.env.REDIS_URL;
 
 export class RedisIoAdapter extends IoAdapter {
   private adapterConstructor: ReturnType<typeof createAdapter>;
+  private pubClient: ReturnType<typeof createClient>;
 
   async connectToRedis(): Promise<void> {
-    const pubClient = createClient({ url: redisURL });
-    const subClient = pubClient.duplicate();
-
-    pubClient.on('error', (err) => {
+    this.pubClient = createClient({ url: redisURL });
+    const subClient = this.pubClient.duplicate();
+    this.pubClient.on('error', (err) => {
       console.error('Erro no cliente Redis (publicação):', err);
     });
     subClient.on('error', (err) => {
       console.error('Erro no cliente Redis (subscrição):', err);
     });
 
-    await Promise.all([pubClient.connect(), subClient.connect()]);
+    await Promise.all([this.pubClient.connect(), subClient.connect()]);
 
-    this.adapterConstructor = createAdapter(pubClient, subClient);
+    this.adapterConstructor = createAdapter(this.pubClient, subClient);
   }
 
   createIOServer(port: number, options?: ServerOptions): any {
@@ -35,5 +35,33 @@ export class RedisIoAdapter extends IoAdapter {
     });
     server.adapter(this.adapterConstructor);
     return server;
+  }
+
+  async storeMessage(conversationId: string, message: any): Promise<number> {
+    if (!this.pubClient) {
+      await this.connectToRedis();
+    }
+    try {
+      const messageStr =
+        typeof message === 'string' ? message : JSON.stringify(message);
+      const result = await this.pubClient.rPush(conversationId, messageStr);
+      return result;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  }
+
+  async getMessages(conversationId: string): Promise<string[]> {
+    if (!this.pubClient) {
+      await this.connectToRedis();
+    }
+    try {
+      const result = await this.pubClient.lRange(conversationId, 0, -1);
+      return result;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
   }
 }
