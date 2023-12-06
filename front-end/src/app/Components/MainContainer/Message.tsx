@@ -1,29 +1,33 @@
-'use client'
+"use client";
 
-import React from 'react';
+import React from "react";
 
 interface MessageProps {
-  message: string;
-  userName: string;
-  currentUser: string;
+  key: number;
+  chatMessage: string;
+  name: string;
 }
 
-const Message: React.FC<MessageProps> = ({ message, userName, currentUser }) => {
-  const isCurrentUser = userName === currentUser;
+const Message: React.FC<MessageProps> = ({ chatMessage, key, name }) => {
+  const user = chatMessage.split(":")[0];
+  const message = chatMessage.split(":")[1];
+  const isCurrentUser = user === name;
 
   return (
-    <div className={`message ${isCurrentUser ? 'currentUser' : ''}`}>
-      <p>{message}</p>
-      <style jsx>{`
-        .message {
-          text-align: left;
-          margin-bottom: 10px;
-        }
-        .message.currentUser {
-          text-align: right;
-        }
-      `}</style>
-    </div>
+    <>
+      <div
+        key={key}
+        className={`flex ${isCurrentUser ? "justify-end" : "justify-start"}`}
+      >
+        <div
+          className={`max-w-sm break-words rounded-lg px-4 py-2 m-2 ${
+            isCurrentUser ? "bg-blue-500 text-white" : "bg-gray-300 text-black"
+          }`}
+        >
+          <p>{message}</p>
+        </div>
+      </div>
+    </>
   );
 };
 
