@@ -30,4 +30,15 @@ export class UsersController {
   getUserFriends(@Param('username') username: string) {
     return this.usersService.getUserFriends(username);
   }
+
+  @Get(':username/friend/:conversationId')
+  userHasFriendWithConversationId(
+    @Param('conversationId') conversationId: string,
+    @Param('username') username: string,
+  ) {
+    return this.usersService.userHasFriendWithConversationId(
+      username,
+      conversationId,
+    );
+  }
 }

@@ -7,6 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { RedisIoAdapter } from '../adapter/RedisIoAdapter';
+import { UserService } from '../../users/users.service';
 interface ExtendedSocket extends Socket {
   conversationId: string;
 }
@@ -17,7 +18,10 @@ interface ExtendedSocket extends Socket {
   },
 })
 export class ChatGateway {
-  constructor(private readonly redisIoAdapter: RedisIoAdapter) {}
+  constructor(
+    private readonly redisIoAdapter: RedisIoAdapter,
+    private readonly usersService: UserService,
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -30,9 +34,14 @@ export class ChatGateway {
     client.conversationId = data.conversationId;
     client.join(data.conversationId);
 
-    console.log(data.conversationId);
+    const user = await this.usersService.getUser(data.name);
+    const userHasFriendWithConversationId =
+      await this.usersService.userHasFriendWithConversationId(
+        user.userName,
+        data.conversationId.id,
+      );
 
-    if (data.conversationId.id) {
+    if (userHasFriendWithConversationId.message === 'Amigo encontrado') {
       const messages = await this.redisIoAdapter.getMessages(
         data.conversationId.id,
       );

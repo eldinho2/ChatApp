@@ -41,9 +41,6 @@ export class UserService {
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
-      } else {
-        console.error(error);
-        throw new Error('aconteceu um erro inesperado');
       }
     }
   }
@@ -65,15 +62,14 @@ export class UserService {
   }
 
   async addFriend(userName: string, friendName: string) {
+    console.log(userName, friendName);
     try {
       const user = await this.prisma.user.findUnique({
         where: { userName },
-        select: { id: true },
       });
 
       const friend = await this.prisma.user.findUnique({
         where: { userName: friendName },
-        select: { userName: true },
       });
 
       if (!friend || !user) {
@@ -100,6 +96,16 @@ export class UserService {
           conversationId: conversationId,
         },
       });
+      // Adicione o user1 à lista de amigos do user2
+      await this.prisma.friend.create({
+        data: {
+          userId: friend.id,
+          friendName: user.userName,
+          conversationId: conversationId,
+        },
+      });
+
+      return { message: 'Friend added successfully' };
     } catch (error) {
       if (
         error instanceof NotFoundException ||
@@ -108,7 +114,7 @@ export class UserService {
         throw error;
       } else {
         console.error(error);
-        throw new Error('ocorreu um erro inesperado');
+        throw new NotFoundException('ocorreu um erro inesperado');
       }
     }
   }
@@ -134,7 +140,7 @@ export class UserService {
       });
 
       if (!friend || !user) {
-        throw new Error('Usuario ou amigo não encontrado');
+        throw new NotFoundException('Usuario ou amigo não encontrado');
       }
 
       // Remover o amigo da lista de amigos do usuário
@@ -154,6 +160,36 @@ export class UserService {
       });
     } catch (error) {
       throw new Error(error);
+    }
+  }
+
+  async userHasFriendWithConversationId(username, conversationId) {
+    try {
+      const friend = await this.prisma.user.findUnique({
+        where: {
+          userName: username,
+        },
+        select: {
+          id: true,
+          friends: true,
+        },
+      });
+
+      if (!friend) {
+        throw new NotFoundException('Amigo não encontrado');
+      }
+
+      const friendHasConversationId = friend.friends.some(
+        (friend) => friend.conversationId === conversationId,
+      );
+
+      if (!friendHasConversationId) {
+        return { message: 'Conversa não encontrada' };
+      } else {
+        return { message: 'Amigo encontrado' };
+      }
+    } catch (error) {
+      throw new NotFoundException(error);
     }
   }
 }
