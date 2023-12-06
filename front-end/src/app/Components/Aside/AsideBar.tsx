@@ -1,6 +1,7 @@
 import React from "react";
 import { Profile } from "./index";
 import { AddFriend } from "./index";
+import { Friends } from './index'
 
 export default function AsideBar() {
   return (
@@ -8,7 +9,9 @@ export default function AsideBar() {
       <div>
         <AddFriend />
       </div>
-      <div>Amigos</div>
+      <div>
+        <Friends/>
+      </div>
       <div>
         <Profile />
       </div>
