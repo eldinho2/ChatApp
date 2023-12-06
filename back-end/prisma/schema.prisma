@@ -12,10 +12,19 @@ datasource db {
 }
 
 model User {
-  id    String  @unique @default(uuid()) 
+  id    String  @unique @default(uuid())
   email String  @unique
   userName String @unique
   hashedPassword String 
   createdAt DateTime @default(now())
   updateAt DateTime @updatedAt()
+  friends Friend[]
+}
+
+model Friend {
+  id String @id @default(uuid())
+  userId String
+  conversationId String
+  friendName String
+  user User @relation(fields: [userId], references: [id])
 }
