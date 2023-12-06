@@ -23,7 +23,7 @@ export const nextAuthOptions: NextAuthOptions = {
       },      
       async authorize(credentials) {
         try {
-          const response = await axios.post("http://localhost:3001/auth/signin", {
+          const response = await axios.post("http://localhost:3002/auth/signin", {
             email: credentials?.email,
             password: credentials?.password
           })
@@ -32,6 +32,9 @@ export const nextAuthOptions: NextAuthOptions = {
           if (response.status !== 200) {
             throw new Error(data.message);
           }
+
+          console.log(data);
+          
       
           return data
         } catch (error) {
@@ -54,7 +57,7 @@ export const nextAuthOptions: NextAuthOptions = {
 
       async authorize(credentials) {
         try {
-          const response = await axios.post("http://localhost:3001/auth/signup", {
+          const response = await axios.post("http://localhost:3002/auth/signup", {
             userName: credentials?.userName,
             email: credentials?.email,
             password: credentials?.password
