@@ -19,6 +19,7 @@ export default function AddFriend() {
     const [loading, setLoading] = useState(false);
   
     const handleAddFriend = async (friendName: string, userName: string) => {
+      setError("");
       try {
         await axios.post(`http://localhost:3002/users/Addfriend`, {
           friendName,
@@ -50,7 +51,7 @@ export default function AddFriend() {
   
     return (
       <>
-        <div className="flex items-center gap-2 text-white">
+        <div className="flex items-center pl-3 gap-2 text-white">
           <Image
             src="/PFAC Logo.jpg"
             alt="add friend"
@@ -75,7 +76,7 @@ export default function AddFriend() {
             />
           )}
         </div>
-        {error && <p className="text-red-500">{error}</p>}
+        {error && <p className="flex justify-center items-center text-red-500 p-2">{error}</p>}
       </>
     );
   }

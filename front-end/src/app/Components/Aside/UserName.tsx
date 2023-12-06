@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import {getUserNameFromJWT} from '@/app/utils/getUserNameFromJWT'
+import Skeleton from "@/app/utils/skeleton";
 
 export default function UserName() {
   const [userName, setUserName] = useState("");
@@ -19,8 +20,13 @@ export default function UserName() {
 
 
   return (
-    <div className="flex gap-2 text-red-800">
-      <span>{userName}</span>
+    <div className="flex justify-center items-center text-white">
+    
+      {userName ? (
+        <h1 className="text-xl font-bold">{userName}</h1>
+      ) : (
+        <Skeleton rows={1} width="20" />
+      )}
     </div>
   );
 }

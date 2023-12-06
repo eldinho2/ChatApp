@@ -3,8 +3,7 @@ import React from "react";
 
 export default function Profile() {
   return (
-    <div className="flex gap-2 text-red-800">
-      <span>Foto</span>
+    <div className="flex pl-5 items-center gap-2">
       <UserName />
       <LogoutButton />
     </div>

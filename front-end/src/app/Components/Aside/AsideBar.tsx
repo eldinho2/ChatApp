@@ -5,16 +5,10 @@ import { Friends } from './index'
 
 export default function AsideBar() {
   return (
-    <aside className="bg-black text-white h-screen w-[260px] flex flex-col justify-evenly">
-      <div>
-        <AddFriend />
-      </div>
-      <div>
-        <Friends/>
-      </div>
-      <div>
-        <Profile />
-      </div>
+    <aside className="bg-black text-white h-screen w-[290px] flex flex-col justify-between py-12">
+      <AddFriend />
+      <Friends/>
+      <Profile />
     </aside>
   );
 }
