@@ -48,7 +48,3 @@
 ::placeholder {
   color: transparent;
 }
-
-:focus::placeholder {
-  color: #10a37f;
-}
