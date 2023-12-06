@@ -6,7 +6,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { loginSchema, registerSchema } from './loginSchemas'
-import LoadingSpinner from "@/app/Components/utils/LoadingSpinner";
+import LoadingSpinner from "@/app/utils/LoadingSpinner";
 
 type FormData = {
   userName: string;
