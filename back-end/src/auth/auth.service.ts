@@ -63,6 +63,8 @@ export class AuthService {
     });
 
     res.status(200).send({ message: token });
+
+    return token;
   }
 
   async signin(dto: AuthLoginDto, res: Response) {
@@ -102,6 +104,8 @@ export class AuthService {
     }
 
     res.status(200).send({ message: token });
+
+    return token;
   }
 
   async signout(res: Response) {
