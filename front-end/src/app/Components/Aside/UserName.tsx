@@ -1,40 +1,26 @@
+'use client'
+
 import React, { useEffect, useState } from "react";
-import { nextAuthOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getServerSession } from "next-auth";
-import jwt, { Secret } from "jsonwebtoken";
+import {getUserNameFromJWT} from '@/app/utils/getUserNameFromJWT'
 
-import { Session } from "next-auth";
+export default function UserName() {
+  const [userName, setUserName] = useState("");
+  const [renderKey, setRenderKey] = useState(0);
 
-interface ExtendedSession extends Session {
-  user: {
-    name?: string | null | undefined;
-    message: string;
-  };
-}
+  const fetchUserName = async () => {
+    const result = await getUserNameFromJWT();
+    setUserName(result);
+  }
 
-const secret = process.env.JWT_SECRET;
-
-export default async function Profile() {
-
-  const session = (await getServerSession(nextAuthOptions)) as ExtendedSession;
-
-  
-  const getUserNameFromJWT = () => {
-    if (session) {
-      const decoded = jwt.verify(session.user.message, secret as Secret);
-  
-      if (typeof decoded === "object" && "userName" in decoded) {
-        return decoded.userName;
-      }
-    }
-  
-    return "Nome de Usuário Desconhecido";
-  };
+  useEffect(() => {
+    fetchUserName();
+    setRenderKey(prevKey => prevKey + 1);
+  }, []);
 
 
   return (
     <div className="flex gap-2 text-red-800">
-      <span>{getUserNameFromJWT()}</span>
+      <span>{userName}</span>
     </div>
   );
 }
