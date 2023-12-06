@@ -45,6 +45,7 @@ export default function Login() {
     if (result?.error) {
       console.log(result?.error)
       setApiError(result?.error)
+      setIsLoading(false)
       return
     }
 
