@@ -13,6 +13,7 @@ interface AxiosError extends Error {
 
 
 export const nextAuthOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
       id:'login',
