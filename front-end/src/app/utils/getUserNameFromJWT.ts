@@ -1,5 +1,5 @@
 "use server"
-import { nextAuthOptions } from "@/app/api/auth/[...nextauth]";
+import { nextAuthOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import jwt, { Secret } from "jsonwebtoken";
 

@@ -24,22 +24,16 @@ export const nextAuthOptions: NextAuthOptions = {
       },      
       async authorize(credentials) {
         try {
-          const response = await axios.post(`${process.env.BASE_URL}/auth/signin`, {
+          const response = await axios.post("https://pfac-back-end-production.up.railway.app/auth/signin", {
             email: credentials?.email,
             password: credentials?.password
           })
 
-          const data = response.data;
-
-          console.log(data);
-          
+          const data = response.data;          
 
           if (response.status !== 200) {
             throw new Error(data.message);
-          }
-
-          console.log(data);
-          
+          }          
       
           return data
         } catch (error) {
@@ -86,6 +80,11 @@ export const nextAuthOptions: NextAuthOptions = {
       }
     }),
   ],
+  pages: {
+    signIn: '/auth/signin',
+    signOut: '/auth/signout',
+    error: '/auth/2error',
+  },
   callbacks: {
   async jwt({ token, user, account, profile, isNewUser }) {
     if (user) {

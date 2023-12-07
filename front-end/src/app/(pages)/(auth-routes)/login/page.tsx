@@ -33,14 +33,11 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(!isLoading)
     const { userName, email, password } = data;
-
     const result = await signIn(formType, {
       ...(formType === 'register' && { userName }),
       email,
       password,
-      redirect: false
-    })
-    
+    })    
     
     if (result?.error) {
       console.log(result?.error)
@@ -48,8 +45,6 @@ export default function Login() {
       setIsLoading(false)
       return
     }
-
-    router.replace('/chat')
   };
 
 
