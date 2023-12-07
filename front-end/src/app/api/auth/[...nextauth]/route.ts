@@ -24,7 +24,7 @@ export const nextAuthOptions: NextAuthOptions = {
       },      
       async authorize(credentials) {
         try {
-          const response = await axios.post("https://pfac-back-end-production.up.railway.app/auth/signin", {
+          const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/signin`, {
             email: credentials?.email,
             password: credentials?.password
           })
@@ -56,7 +56,7 @@ export const nextAuthOptions: NextAuthOptions = {
 
       async authorize(credentials) {
         try {
-          const response = await axios.post(`${process.env.BASE_URL}/auth/signup`, {
+          const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/signup`, {
             userName: credentials?.userName,
             email: credentials?.email,
             password: credentials?.password

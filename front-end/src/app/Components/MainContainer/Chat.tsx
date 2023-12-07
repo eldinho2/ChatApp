@@ -18,7 +18,7 @@ export default function Chat() {
 
   useEffect(() => {
     if (Object.values(conversationId).length !== 0) {
-      const newSocket = io(`${process.env.BASE_URL}`);
+      const newSocket = io(`${process.env.NEXT_PUBLIC_BASE_URL}`);
       setSocket(newSocket);
     }
   }, [conversationId]);

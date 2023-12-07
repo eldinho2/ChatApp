@@ -28,7 +28,7 @@ export default function Friends() {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [userName, setUserName] = useState("");
   const [loading, setLoading] = useState(true);
-
+  
   useEffect(() => {
     const handleGetFriends = async () => {
       try {
@@ -36,7 +36,7 @@ export default function Friends() {
         setUserName(userName);
 
         const response = await axios.get(
-          `${process.env.BASE_URL}/users/${userName}/friends`
+          `${process.env.NEXT_PUBLIC_BASE_URL}/users/${userName}/friends`
         );
         setFriends(response.data.friends);
       } catch (error) {
@@ -48,10 +48,10 @@ export default function Friends() {
 
     handleGetFriends();
   }, [friends]);
-
+  
   const handleDellFriend = async (friendName: string, userName: string) => {
     try {
-      await axios.post(`${process.env.BASE_URL}/users/Dellfriend`, {
+      await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/users/Dellfriend`, {
         friendName,
         userName,
       });

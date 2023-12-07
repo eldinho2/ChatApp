@@ -21,7 +21,7 @@ export default function AddFriend() {
     const handleAddFriend = async (friendName: string, userName: string) => {
       setError("");
       try {
-        await axios.post(`${process.env.BASE_URL}/users/Addfriend`, {
+        await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/users/Addfriend`, {
           friendName,
           userName,
         });
@@ -35,7 +35,7 @@ export default function AddFriend() {
       setUserName('');
       try {
         userNameSchema.parse(userName)
-        await axios.get(`${process.env.BASE_URL}/users/${userName}`);
+        await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/users/${userName}`);
         const friendName = await getUserNameFromJWT();
         handleAddFriend(friendName, userName);
       } catch (error: any) {
