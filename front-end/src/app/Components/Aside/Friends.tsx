@@ -36,7 +36,7 @@ export default function Friends() {
         setUserName(userName);
 
         const response = await axios.get(
-          `http://localhost:3002/users/${userName}/friends`
+          `${process.env.BASE_URL}/users/${userName}/friends`
         );
         setFriends(response.data.friends);
       } catch (error) {
@@ -51,7 +51,7 @@ export default function Friends() {
 
   const handleDellFriend = async (friendName: string, userName: string) => {
     try {
-      await axios.post(`http://localhost:3002/users/Dellfriend`, {
+      await axios.post(`${process.env.BASE_URL}/users/Dellfriend`, {
         friendName,
         userName,
       });

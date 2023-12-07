@@ -23,7 +23,7 @@ export const nextAuthOptions: NextAuthOptions = {
       },      
       async authorize(credentials) {
         try {
-          const response = await axios.post("http://localhost:3002/auth/signin", {
+          const response = await axios.post(`${process.env.BASE_URL}/auth/signin`, {
             email: credentials?.email,
             password: credentials?.password
           })
@@ -57,7 +57,7 @@ export const nextAuthOptions: NextAuthOptions = {
 
       async authorize(credentials) {
         try {
-          const response = await axios.post("http://localhost:3002/auth/signup", {
+          const response = await axios.post(`${process.env.BASE_URL}/auth/signup`, {
             userName: credentials?.userName,
             email: credentials?.email,
             password: credentials?.password
