@@ -27,8 +27,12 @@ export const nextAuthOptions: NextAuthOptions = {
             email: credentials?.email,
             password: credentials?.password
           })
-      
+
           const data = response.data;
+
+          console.log(data);
+          
+
           if (response.status !== 200) {
             throw new Error(data.message);
           }
